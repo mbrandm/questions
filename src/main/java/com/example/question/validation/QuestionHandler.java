@@ -4,33 +4,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.question.validation.InputHandler.ELEMENT_MAX_SIZE;
-
 public class QuestionHandler {
     private static final char QUESTION_MARKER = '?';
-
+    private static final int QUESTION_MAX_SIZE = 255;
     private final List<Error> errors = new ArrayList<>();
-
     private String question;
     private boolean questionValid;
-    private int i = 0;
+    private int i;
 
-    public void handleInput(CharSequence inputLine) {
+    public void handleInput(CharSequence questionInput) {
         boolean questionFound = false;
-        StringBuilder question = new StringBuilder();
-        for (; i < inputLine.length() && !questionFound; i++) {
-            char actual = inputLine.charAt(i);
-            question.append(actual);
+        StringBuilder questionBuilder = new StringBuilder();
+        for (; i < questionInput.length() && !questionFound; i++) {
+            char actual = questionInput.charAt(i);
+            questionBuilder.append(actual);
             if (QUESTION_MARKER == actual) {
                 questionFound = true;
             }
         }
         if (questionFound) {
-            if (question.length() > ELEMENT_MAX_SIZE) {
+            if (questionBuilder.length() > QUESTION_MAX_SIZE) {
                 errors.add(Error.QUESTION_TOO_LARGE);
             } else {
-                this.question = question.toString();
-                this.questionValid = true;
+                if (isQuestionEmptyOrBlank(questionBuilder)) {
+                    errors.add(Error.QUESTION_EMPTY_OR_BLANK);
+                } else {
+                    this.question = questionBuilder.toString();
+                    this.questionValid = true;
+                }
             }
         } else {
             errors.add(Error.QUESTION_NOT_DEFINED);
@@ -41,7 +42,7 @@ public class QuestionHandler {
         return Optional.ofNullable(question);
     }
 
-    public boolean isInputValid() {
+    public boolean isValidQuestion() {
         return questionValid && errors.isEmpty();
     }
 
@@ -51,5 +52,10 @@ public class QuestionHandler {
 
     public int getLatestIndex() {
         return i;
+    }
+
+    private boolean isQuestionEmptyOrBlank(CharSequence questionPhrase) {
+        String question = questionPhrase.subSequence(0, questionPhrase.length()-1).toString();
+        return question.isBlank();
     }
 }

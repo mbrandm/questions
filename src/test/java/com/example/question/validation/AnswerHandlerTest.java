@@ -65,19 +65,6 @@ public class AnswerHandlerTest {
     }
 
 
-
-    @Test
-    void handleInput_emptyInputNoAnswerDefined_shouldBeValid() {
-        answerHandler.handleInput("   ");
-        assertAll(
-                () -> assertTrue(answerHandler.isValidAnswerInput()),
-                () -> assertFalse(answerHandler.hasAnswers()),
-                () -> assertThat(answerHandler.getAnswers())
-                        .hasSize(0)
-        );
-    }
-
-
     @Test
     void handleInput_blankAnswer_shouldShowEmptyOrBlankError() {
         answerHandler.handleInput("\"t1\"\"  \" \"t2\"");
@@ -100,6 +87,7 @@ public class AnswerHandlerTest {
         );
     }
 
+
     @Test
     void handleInput_emptyAndDuplicatedAnswer_shouldShowEmptyOrBlankAndDuplicatedErrors() {
         answerHandler.handleInput("\"t1\"\"\" \"t1\"");
@@ -111,6 +99,105 @@ public class AnswerHandlerTest {
                         .contains(Error.ANSWER_DUPLICATED)
         );
     }
+
+
+    @Test
+    void handleInput_blankedInputNoAnswerDefined_shouldBeNotConsideredAsAnswerAndBeValid() {
+        answerHandler.handleInput("   ");
+        assertAll(
+                () -> assertTrue(answerHandler.isValidAnswerInput()),
+                () -> assertFalse(answerHandler.hasAnswers()),
+                () -> assertThat(answerHandler.getErrors())
+                        .isEmpty(),
+                () -> assertThat(answerHandler.getAnswers())
+                        .hasSize(0)
+        );
+    }
+
+    @Test
+    void handleInput_emptyInputNoAnswerDefined_shouldBeNotConsideredAsAnswerAndBeValid() {
+        answerHandler.handleInput("");
+        assertAll(
+                () -> assertTrue(answerHandler.isValidAnswerInput()),
+                () -> assertFalse(answerHandler.hasAnswers()),
+                () -> assertThat(answerHandler.getErrors())
+                        .isEmpty(),
+                () -> assertThat(answerHandler.getAnswers())
+                        .hasSize(0)
+        );
+    }
+
+
+
+    @Test
+    void handleInput_textAsInputNoAnswer_shouldShowAnTextOutsideError() {
+        answerHandler.handleInput(" te   s  ttest");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertFalse(answerHandler.hasAnswers()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.TEXT_OUTSIDE_TAGS),
+                () -> assertThat(answerHandler.getAnswers())
+                        .hasSize(0)
+        );
+    }
+
+    @Test
+    void handleInput_textBeforeAnswer_shouldShowAnTextOutsideError() {
+        answerHandler.handleInput(" te   s  ttest \"t1\"");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.TEXT_OUTSIDE_TAGS)
+        );
+    }
+
+    @Test
+    void handleInput_textBetweenAnswers_shouldShowAnTextOutsideError() {
+        answerHandler.handleInput("\"t1\"asdf\"t2\"  \"t3\"");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.TEXT_OUTSIDE_TAGS)
+        );
+    }
+
+
+    @Test
+    void handleInput_endTagMissing_shouldShowAnEndTagMissingError() {
+        answerHandler.handleInput("\"t1\" \"t2\" \"t3");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.ANSWER_END_TAG_MISSING)
+        );
+    }
+
+
+    @Test
+    void handleInput_middleTagMissing_shouldShowTextOutsideTagsError() {
+        answerHandler.handleInput("\"t1\" \"t2   \"t3\"");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.TEXT_OUTSIDE_TAGS)
+        );
+    }
+
+
+    @Test
+    void handleInput_inputLongernThan255Chars_shouldShowTextOutsideTagsError() {
+        answerHandler.handleInput("\"t1\"   \"t2\" \"asdflksjadfljsfdlö    kjsalgökjslgjsalögjslödgjsa    ldfjalsdfjlkjglkjwg02ug9283hgsdhgkjsagflksjdglkjsagldkjsdglöasjgdlöskajgdlösdjglkjsglsjdglsjdglösdjglskdjgslkdjglskdgjlskdjglksjgdlksjglksjdlgkjslgdkjsdolgijsgoijgwejgosjglsjgoisdjgoisjgosidgjsodigjsoidgjsoidgjsoidgjsoidgjsoigjsoidgjsdog\"");
+        assertAll(
+                () -> assertFalse(answerHandler.isValidAnswerInput()),
+                () -> assertThat(answerHandler.getErrors())
+                        .containsExactly(Error.ANSWER_TOO_LARGE)
+        );
+    }
+
+
+
+
 
 
 }

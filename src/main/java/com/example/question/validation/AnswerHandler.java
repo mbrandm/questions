@@ -13,15 +13,15 @@ public class AnswerHandler {
     private final List<Error> errors = new ArrayList<>();
     private final Set<String> answers = new HashSet<>();
 
+
+    //TODO: refactor
     public void handleInput(CharSequence inputLine) {
 
         for (int i = 0; i < inputLine.length(); ) {
-
             char actual = inputLine.charAt(i);
 
             if (actual != ' ' && actual != START_TAG) {
-                //TODO: different between text between ? and " and text between " and " via index
-                errors.add(Error.TEXT_IN_BETWEEN_MARKER);
+                errors.add(Error.TEXT_OUTSIDE_TAGS);
                 break;
             } else {
 
