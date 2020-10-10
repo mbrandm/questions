@@ -2,12 +2,11 @@ package com.example.question.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class QuestionHandler {
+public class QuestionValidator {
     private static final char QUESTION_MARKER = '?';
     private static final int QUESTION_MAX_SIZE = 255;
-    private final List<Error> errors = new ArrayList<>();
+    private final List<InputValidationError> errors = new ArrayList<>();
     private String question;
     private boolean questionValid;
     private int i;
@@ -24,29 +23,29 @@ public class QuestionHandler {
         }
         if (questionFound) {
             if (questionBuilder.length() > QUESTION_MAX_SIZE) {
-                errors.add(Error.QUESTION_TOO_LARGE);
+                errors.add(InputValidationError.QUESTION_TOO_LARGE);
             } else {
                 if (isQuestionEmptyOrBlank(questionBuilder)) {
-                    errors.add(Error.QUESTION_EMPTY_OR_BLANK);
+                    errors.add(InputValidationError.QUESTION_EMPTY_OR_BLANK);
                 } else {
                     this.question = questionBuilder.toString();
                     this.questionValid = true;
                 }
             }
         } else {
-            errors.add(Error.QUESTION_NOT_DEFINED);
+            errors.add(InputValidationError.QUESTION_NOT_DEFINED);
         }
     }
 
-    public Optional<String> getQuestion() {
-        return Optional.ofNullable(question);
+    public String getQuestion() {
+        return question;
     }
 
     public boolean isValidQuestion() {
         return questionValid && errors.isEmpty();
     }
 
-    public List<Error> getErrors() {
+    public List<InputValidationError> getErrors() {
         return errors;
     }
 

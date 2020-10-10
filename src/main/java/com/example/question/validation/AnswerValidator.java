@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AnswerHandler {
+public class AnswerValidator {
     private static final char START_TAG = '\"';
     private static final char END_TAG = '\"';
     private static final int MAX_ANSWER_SIZE = 255;
 
-    private final List<Error> errors = new ArrayList<>();
+    private final List<InputValidationError> errors = new ArrayList<>();
     private final Set<String> answers = new HashSet<>();
 
 
@@ -21,7 +21,7 @@ public class AnswerHandler {
             char actual = inputLine.charAt(i);
 
             if (actual != ' ' && actual != START_TAG) {
-                errors.add(Error.TEXT_OUTSIDE_TAGS);
+                errors.add(InputValidationError.TEXT_OUTSIDE_TAGS);
                 break;
             } else {
 
@@ -49,20 +49,20 @@ public class AnswerHandler {
                     if (answerCompleted) {
                         answer = answerBuilder.toString();
                         if (answer.isBlank()) {
-                            errors.add(Error.ANSWER_EMPTY_OR_BLANK);
+                            errors.add(InputValidationError.ANSWER_EMPTY_OR_BLANK);
                         } else {
                             if (answer.length() > MAX_ANSWER_SIZE) {
-                                errors.add(Error.ANSWER_TOO_LARGE);
+                                errors.add(InputValidationError.ANSWER_TOO_LARGE);
                             } else {
                                 if (answers.contains(answer)) {
-                                    errors.add(Error.ANSWER_DUPLICATED);
+                                    errors.add(InputValidationError.ANSWER_DUPLICATED);
                                 } else {
                                     answers.add(answer);
                                 }
                             }
                         }
                     } else {
-                        errors.add(Error.ANSWER_END_TAG_MISSING);
+                        errors.add(InputValidationError.ANSWER_END_TAG_MISSING);
                     }
                 } else {
                     i++;
@@ -84,7 +84,7 @@ public class AnswerHandler {
         return answers;
     }
 
-    public List<Error> getErrors() {
+    public List<InputValidationError> getErrors() {
         return errors;
     }
 }

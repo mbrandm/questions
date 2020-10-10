@@ -1,6 +1,6 @@
 package com.example.question.validation;
 
-public enum Error {
+public enum InputValidationError {
 
     EMPTY_INPUT("Error: input empty or blank, please ask a question, or set a question/answer-combination"),
 
@@ -13,13 +13,11 @@ public enum Error {
     ANSWER_DUPLICATED("Error: there a duplicated answers"),
     ANSWER_END_TAG_MISSING("Error: the end-tag of an answer is missing"),
 
-    TEXT_OUTSIDE_TAGS("Error: There is text where not text should be. Either outside the \"-Tags, or in between question(?) and answer-marker(\")")
-
-    ;
+    TEXT_OUTSIDE_TAGS("Error: There is text where not text should be. Either outside the \"-Tags, or in between question(?) and answer-marker(\")");
 
     private String message;
 
-    Error(String message) {
+    InputValidationError(String message) {
         this.message = message;
     }
 
