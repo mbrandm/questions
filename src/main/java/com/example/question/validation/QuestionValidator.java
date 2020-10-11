@@ -21,21 +21,27 @@ public class QuestionValidator {
                 questionFound = true;
             }
         }
+
         if (questionFound) {
-            if (questionBuilder.length() > QUESTION_MAX_SIZE) {
-                errors.add(InputValidationError.QUESTION_TOO_LARGE);
-            } else {
-                if (isQuestionEmptyOrBlank(questionBuilder)) {
-                    errors.add(InputValidationError.QUESTION_EMPTY_OR_BLANK);
-                } else {
-                    this.question = questionBuilder.toString();
-                    this.questionValid = true;
-                }
-            }
+            handleFoundedQuestion(questionBuilder);
         } else {
             errors.add(InputValidationError.QUESTION_NOT_DEFINED);
         }
     }
+
+    private void handleFoundedQuestion(StringBuilder questionBuilder) {
+        if (questionBuilder.length() > QUESTION_MAX_SIZE) {
+            errors.add(InputValidationError.QUESTION_TOO_LARGE);
+            return;
+        }
+        if (isQuestionEmptyOrBlank(questionBuilder)) {
+            errors.add(InputValidationError.QUESTION_EMPTY_OR_BLANK);
+            return;
+        }
+        this.question = questionBuilder.toString();
+        this.questionValid = true;
+    }
+
 
     public String getQuestion() {
         return question;
@@ -54,7 +60,6 @@ public class QuestionValidator {
     }
 
     private boolean isQuestionEmptyOrBlank(CharSequence questionPhrase) {
-        String question = questionPhrase.subSequence(0, questionPhrase.length()-1).toString();
-        return question.isBlank();
+        return questionPhrase.subSequence(0, questionPhrase.length() - 1).toString().isBlank();
     }
 }

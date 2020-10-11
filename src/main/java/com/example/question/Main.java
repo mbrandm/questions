@@ -14,14 +14,14 @@ public class Main {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 String inputLine = reader.readLine();
-                if ("quit".equalsIgnoreCase(inputLine)) {
+                if ("q".equalsIgnoreCase(inputLine.strip()) || "quit".equalsIgnoreCase(inputLine.strip())) {
                     break;
                 }
                 questionManager.process(inputLine);
 
             }
         } catch (IOException e) {
-            System.out.println("Ein Fehler in der Verarbeitung ist aufgetreten");
+            System.out.println("Sorry beloved user, an IOException occured");
         }
     }
 

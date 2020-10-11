@@ -11,7 +11,7 @@ public class SimpleTemporaryQuestionAnswersManager implements QuestionAnswersPer
     private final Map<String, QuestionAnswers> questionAnswers = new HashMap<>();
 
     @Override
-    public boolean containsAnswer(String question) {
+    public boolean isQuestionPersisted(String question) {
         return questionAnswers.containsKey(question);
     }
 

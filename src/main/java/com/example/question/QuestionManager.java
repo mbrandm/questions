@@ -1,6 +1,7 @@
 package com.example.question;
 
 import com.example.question.model.QuestionAnswers;
+import com.example.question.persistence.PersistenceMessage;
 import com.example.question.persistence.QuestionAnswersPersistenceManager;
 import com.example.question.persistence.SimpleTemporaryQuestionAnswersManager;
 import com.example.question.validation.InputValidationError;
@@ -8,11 +9,13 @@ import com.example.question.validation.InputValidator;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class QuestionManager {
 
     //change implementation when required
     private QuestionAnswersPersistenceManager persistenceManager = new SimpleTemporaryQuestionAnswersManager();
+    private OutputPerformer outputPerformer = new OutputPerformer();
 
 
     public void process(String inputLine) {
@@ -28,29 +31,30 @@ public class QuestionManager {
         } else {
             processErrors(inputValidator.getErrors());
         }
-
     }
 
     private void processSingleQuestion(String question, QuestionAnswersPersistenceManager persistenceManager) {
-        if (persistenceManager.containsAnswer(question)) {
+        if (persistenceManager.isQuestionPersisted(question)) {
             Set<String> answers = persistenceManager.getAnswers(question);
-            OutputPerformer.performOutput(answers);
+            outputPerformer.performOutput(answers);
         } else {
-            OutputPerformer.performDefaultAnswer();
+            outputPerformer.performDefaultAnswer();
         }
     }
 
     private void processQuestionAnswerCombination(QuestionAnswers questionAnswers, QuestionAnswersPersistenceManager persistenceManager) {
-        if(!persistenceManager.containsAnswer(questionAnswers.getQuestion())) {
+        if (!persistenceManager.isQuestionPersisted(questionAnswers.getQuestion())) {
             persistenceManager.addQuestionAnswers(questionAnswers);
+            outputPerformer.outputMessage(PersistenceMessage.QUESTION_SAVED_SUCCESSFULLY.toString());
+        } else {
+            outputPerformer.outputMessage(PersistenceMessage.QUESTION_STILL_AVAILABLE.toString());
         }
-        else {
-            //TODO: all the handlings and checks
-        }
-
     }
 
     private void processErrors(List<InputValidationError> errors) {
-        errors.forEach(System.out::println);
+        outputPerformer.outputMessages(errors.stream()
+                .map(InputValidationError::toString)
+                .collect(Collectors.toList()));
     }
+
 }

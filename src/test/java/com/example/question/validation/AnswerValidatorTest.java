@@ -54,13 +54,35 @@ public class AnswerValidatorTest {
     }
 
     @Test
-    void handleInput_duplicatedAnswers_shouldShowAnError() {
+    void handleInput_exactDuplicatedAnswers_shouldShowAnError() {
         answerValidator.handleInput("\"t1\"\"t2\" \"t1\"");
         assertAll(
                 () -> assertFalse(answerValidator.isValidAnswerInput()),
                 () -> assertThat(answerValidator.getErrors())
                         .hasSize(1)
-                        .containsExactly(InputValidationError.ANSWER_DUPLICATED)
+                        .containsExactly(InputValidationError.ANSWER_DUPLICATED_EXACT_MATCH)
+        );
+    }
+
+    @Test
+    void handleInput_caseinsensitiveDuplicatedAnswers_shouldShowAnDuplicatedInsenstiveError() {
+        answerValidator.handleInput("\"t1\" \"T1\"");
+        assertAll(
+                () -> assertFalse(answerValidator.isValidAnswerInput()),
+                () -> assertThat(answerValidator.getErrors())
+                        .hasSize(1)
+                        .containsExactly(InputValidationError.ANSWER_DUPLICATED_INSENSITIVE_MATCH)
+        );
+    }
+
+    @Test
+    void handleInput_caseinsensitiveDuplicatedAnswersWithLeadingBlanks_shouldBeValid() {
+        answerValidator.handleInput("\" t1\" \"T1\"");
+        assertAll(
+                () -> assertTrue(answerValidator.isValidAnswerInput()),
+                () -> assertThat(answerValidator.getAnswers())
+                        .containsExactly(" t1", "T1"),
+                () -> assertTrue(answerValidator.isValidAnswerInput())
         );
     }
 
@@ -96,7 +118,7 @@ public class AnswerValidatorTest {
                 () -> assertThat(answerValidator.getErrors())
                         .hasSize(2)
                         .contains(InputValidationError.ANSWER_EMPTY_OR_BLANK)
-                        .contains(InputValidationError.ANSWER_DUPLICATED)
+                        .contains(InputValidationError.ANSWER_DUPLICATED_EXACT_MATCH)
         );
     }
 
@@ -110,7 +132,7 @@ public class AnswerValidatorTest {
                 () -> assertThat(answerValidator.getErrors())
                         .isEmpty(),
                 () -> assertThat(answerValidator.getAnswers())
-                        .hasSize(0)
+                        .isEmpty()
         );
     }
 
@@ -123,10 +145,9 @@ public class AnswerValidatorTest {
                 () -> assertThat(answerValidator.getErrors())
                         .isEmpty(),
                 () -> assertThat(answerValidator.getAnswers())
-                        .hasSize(0)
+                        .isEmpty()
         );
     }
-
 
 
     @Test
@@ -138,7 +159,7 @@ public class AnswerValidatorTest {
                 () -> assertThat(answerValidator.getErrors())
                         .containsExactly(InputValidationError.TEXT_OUTSIDE_TAGS),
                 () -> assertThat(answerValidator.getAnswers())
-                        .hasSize(0)
+                        .isEmpty()
         );
     }
 
@@ -194,10 +215,6 @@ public class AnswerValidatorTest {
                         .containsExactly(InputValidationError.ANSWER_TOO_LARGE)
         );
     }
-
-
-
-
 
 
 }

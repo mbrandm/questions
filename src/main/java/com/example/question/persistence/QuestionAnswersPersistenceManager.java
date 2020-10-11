@@ -6,7 +6,7 @@ import java.util.Set;
 
 public interface QuestionAnswersPersistenceManager {
 
-    boolean containsAnswer(String question);
+    boolean isQuestionPersisted(String question);
 
     Set<String> getAnswers(String question);
 

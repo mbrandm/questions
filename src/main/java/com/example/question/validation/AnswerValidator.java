@@ -1,9 +1,6 @@
 package com.example.question.validation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AnswerValidator {
     private static final char START_TAG = '\"';
@@ -11,10 +8,10 @@ public class AnswerValidator {
     private static final int MAX_ANSWER_SIZE = 255;
 
     private final List<InputValidationError> errors = new ArrayList<>();
-    private final Set<String> answers = new HashSet<>();
+    private final Set<String> answers = new LinkedHashSet<>();
 
 
-    //TODO: refactor
+    //TODO: refactor, reduce complexity
     public void handleInput(CharSequence inputLine) {
 
         for (int i = 0; i < inputLine.length(); ) {
@@ -23,52 +20,59 @@ public class AnswerValidator {
             if (actual != ' ' && actual != START_TAG) {
                 errors.add(InputValidationError.TEXT_OUTSIDE_TAGS);
                 break;
-            } else {
-
-                if (START_TAG == actual) {
-
-                    boolean answerStarted = true;
-                    boolean answerCompleted = false;
-                    i++;
-                    StringBuilder answerBuilder = new StringBuilder();
-                    String answer;
-
-                    for (; i < inputLine.length() && !answerCompleted; i++) {
-
-                        actual = inputLine.charAt(i);
-
-                        if (END_TAG == actual) {
-                            answerCompleted = true;
-                        } else {
-                            if (answerStarted) {
-                                answerBuilder.append(actual);
-                            }
-                        }
-                    }
-
-                    if (answerCompleted) {
-                        answer = answerBuilder.toString();
-                        if (answer.isBlank()) {
-                            errors.add(InputValidationError.ANSWER_EMPTY_OR_BLANK);
-                        } else {
-                            if (answer.length() > MAX_ANSWER_SIZE) {
-                                errors.add(InputValidationError.ANSWER_TOO_LARGE);
-                            } else {
-                                if (answers.contains(answer)) {
-                                    errors.add(InputValidationError.ANSWER_DUPLICATED);
-                                } else {
-                                    answers.add(answer);
-                                }
-                            }
-                        }
-                    } else {
-                        errors.add(InputValidationError.ANSWER_END_TAG_MISSING);
-                    }
-                } else {
-                    i++;
-                }
             }
+
+            if (START_TAG == actual) {
+                boolean answerStarted = true;
+                boolean answerCompleted = false;
+                StringBuilder answerBuilder = new StringBuilder();
+
+                for (i++; i < inputLine.length() && !answerCompleted; i++) {
+                    actual = inputLine.charAt(i);
+                    if (END_TAG == actual) {
+                        answerCompleted = true;
+                    } else if (answerStarted) {
+                        answerBuilder.append(actual);
+                    }
+                }
+                if (answerCompleted) {
+                    handleCompletedAnswer(answerBuilder);
+                } else {
+                    errors.add(InputValidationError.ANSWER_END_TAG_MISSING);
+                }
+            } else {
+                i++;
+            }
+
         }
+    }
+
+    private void handleCompletedAnswer(StringBuilder answerBuilder) {
+        String answer;
+        answer = answerBuilder.toString();
+        if (answer.isBlank()) {
+            errors.add(InputValidationError.ANSWER_EMPTY_OR_BLANK);
+            return;
+        }
+        if (answer.length() > MAX_ANSWER_SIZE) {
+            errors.add(InputValidationError.ANSWER_TOO_LARGE);
+            return;
+        }
+        if (answers.contains(answer)) {
+            errors.add(InputValidationError.ANSWER_DUPLICATED_EXACT_MATCH);
+            return;
+        }
+        if (hasEqualCaseSensitiveAnswer(answer)) {
+            errors.add(InputValidationError.ANSWER_DUPLICATED_INSENSITIVE_MATCH);
+            return;
+        }
+        answers.add(answer);
+    }
+
+
+    private boolean hasEqualCaseSensitiveAnswer(String answerToPutOnCollection) {
+        return answers.stream()
+                .anyMatch(answerToPutOnCollection::equalsIgnoreCase);
     }
 
 
@@ -88,6 +92,3 @@ public class AnswerValidator {
         return errors;
     }
 }
-
-
-

@@ -10,7 +10,8 @@ public enum InputValidationError {
 
     ANSWER_TOO_LARGE("Error: answer is too large, only 255 chars allowed"),
     ANSWER_EMPTY_OR_BLANK("Error: answer must not be empty or blank"),
-    ANSWER_DUPLICATED("Error: there a duplicated answers"),
+    ANSWER_DUPLICATED_EXACT_MATCH("Error: there a duplicated answers"),
+    ANSWER_DUPLICATED_INSENSITIVE_MATCH("Error: there a duplicated answers, which have case sensitive differences"),
     ANSWER_END_TAG_MISSING("Error: the end-tag of an answer is missing"),
 
     TEXT_OUTSIDE_TAGS("Error: There is text where not text should be. Either outside the \"-Tags, or in between question(?) and answer-marker(\")");
