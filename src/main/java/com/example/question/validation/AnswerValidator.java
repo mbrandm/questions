@@ -1,6 +1,9 @@
 package com.example.question.validation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AnswerValidator {
     private static final char START_TAG = '\"';
@@ -22,8 +25,9 @@ public class AnswerValidator {
                 break;
             }
 
-            if (START_TAG == actual) {
-                boolean answerStarted = true;
+            if (actual != START_TAG) {
+                i++;
+            } else {
                 boolean answerCompleted = false;
                 StringBuilder answerBuilder = new StringBuilder();
 
@@ -31,8 +35,9 @@ public class AnswerValidator {
                     actual = inputLine.charAt(i);
                     if (END_TAG == actual) {
                         answerCompleted = true;
-                    } else if (answerStarted) {
+                    } else {
                         answerBuilder.append(actual);
+
                     }
                 }
                 if (answerCompleted) {
@@ -40,10 +45,7 @@ public class AnswerValidator {
                 } else {
                     errors.add(InputValidationError.ANSWER_END_TAG_MISSING);
                 }
-            } else {
-                i++;
             }
-
         }
     }
 

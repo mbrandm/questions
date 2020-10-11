@@ -14,7 +14,7 @@ public class QuestionValidator {
     public void handleInput(CharSequence questionInput) {
         boolean questionFound = false;
         StringBuilder questionBuilder = new StringBuilder();
-        for (; i < questionInput.length() && !questionFound; i++) {
+        for (i=0; i < questionInput.length() && !questionFound; i++) {
             char actual = questionInput.charAt(i);
             questionBuilder.append(actual);
             if (QUESTION_MARKER == actual) {
