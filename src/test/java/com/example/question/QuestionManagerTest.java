@@ -48,8 +48,8 @@ class QuestionManagerTest {
         questionManager.process("What is the question?");
         assertThat(outContent)
                 .hasToString(QUESTION_SAVED_SUCCESSFULLY + System.lineSeparator()
-                        + "\t• Answer 1" + System.lineSeparator()
-                        + "\t• Answer 2" + System.lineSeparator());
+                        + OutputPerformer.BULLET_POINT+"Answer 1" + System.lineSeparator()
+                        + OutputPerformer.BULLET_POINT+"Answer 2" + System.lineSeparator());
     }
 
     @Test
